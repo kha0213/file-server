@@ -26,10 +26,13 @@ spring:
         use_sql_comments: true
     open-in-view: true
     show-sql: true
-    #log.org.hibernate.SQL=debug
 logging:
   level.org.hibernate.SQL: debug
 
 #File
 file:
   dir: C:\Long\test
+
+#server
+server:
+  port: 8812
