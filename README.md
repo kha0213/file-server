@@ -6,7 +6,7 @@ REST API를 통해 쉽게 파일을 Upload, download, list 조회 할 수 있는
 [![Java11](https://img.shields.io/badge/java-11-yellowgreen)](https://img.shields.io/badge/java-11-yellowgreen)
 [![Gradle](https://img.shields.io/badge/gradle-v7.4-yellowgreen)](https://img.shields.io/badge/gradle-v7.4-yellowgreen)
 [![querydsl](https://img.shields.io/badge/querydsl-5.0.0-yellowgreen)](https://img.shields.io/badge/querydsl-5.0.0-yellowgreen)
-![last commit](https://img.shields.io/github/last-commit/beygee/survive)
+![last commit](https://img.shields.io/github/last-commit/kha0213/file-server)
 
 ## 시스템 필요 조건
 * [JDK 11](https://jdk.java.net/11/)
