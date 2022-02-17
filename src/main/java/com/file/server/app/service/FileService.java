@@ -107,7 +107,7 @@ public class FileService {
      */
     public FileDto find(Long fileId) throws NoSuchFileException {
         File file = fileRepository.findById(fileId)
-                .orElseThrow(NoSuchFileException::new);
+                .orElseThrow(() -> new NoSuchFileException(fileId));
         return new FileDto(file);
     }
 
