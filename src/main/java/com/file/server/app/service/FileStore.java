@@ -47,7 +47,7 @@ public class FileStore {
      * @throws IOException transferTo 에러시 IOException
      */
     public UploadFile storeFile(@NotNull MultipartFile multipartFile) throws IOException {
-        String uploadFileNm = multipartFile.getName();
+        String uploadFileNm = multipartFile.getOriginalFilename();
         String saveFileNm = UUID.randomUUID().toString();
 
         File saveDir = getOrCreateSavePath();
