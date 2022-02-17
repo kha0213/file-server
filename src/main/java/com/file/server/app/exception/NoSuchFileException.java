@@ -1,12 +1,13 @@
 package com.file.server.app.exception;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @NoArgsConstructor
+@Getter
 public class NoSuchFileException extends Exception {
+    private Long fileId;
     public NoSuchFileException(Long fileId) {
-        log.error("No such File FileId [{}]", fileId);
+        this.fileId = fileId;
     }
 }
