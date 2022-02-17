@@ -35,7 +35,7 @@ class FileStoreTest {
     void storeFileTest() throws IOException {
 
         //given
-        when(multipartFile.getName()).thenReturn("1.txt");
+        when(multipartFile.getOriginalFilename()).thenReturn("1.txt");
         doNothing().when(multipartFile).transferTo((java.io.File) any());
 
         //when
