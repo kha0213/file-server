@@ -1,7 +1,7 @@
 package com.file.server.app.repository;
 
 import com.file.server.app.entity.File;
-import com.file.server.app.entity.FileSearch;
+import com.file.server.app.entity.query.FileSearch;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,8 +14,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @TestPropertySource(properties = "spring.main.allow-bean-definition-overriding=true")

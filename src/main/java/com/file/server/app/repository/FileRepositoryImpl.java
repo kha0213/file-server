@@ -1,7 +1,7 @@
 package com.file.server.app.repository;
 
 import com.file.server.app.entity.File;
-import com.file.server.app.entity.FileSearch;
+import com.file.server.app.entity.query.FileSearch;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;

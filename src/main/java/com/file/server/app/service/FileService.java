@@ -1,8 +1,8 @@
 package com.file.server.app.service;
 
 import com.file.server.app.entity.File;
-import com.file.server.app.entity.FileSearch;
 import com.file.server.app.entity.dto.FileDto;
+import com.file.server.app.entity.query.FileSearch;
 import com.file.server.app.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

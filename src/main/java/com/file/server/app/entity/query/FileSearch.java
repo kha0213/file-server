@@ -1,5 +1,6 @@
-package com.file.server.app.entity;
+package com.file.server.app.entity.query;
 
+import com.file.server.app.entity.FileType;
 import lombok.Data;
 
 import java.time.LocalDateTime;

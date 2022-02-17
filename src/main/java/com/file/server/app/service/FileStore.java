@@ -4,7 +4,6 @@ package com.file.server.app.service;
 import com.file.server.app.util.DirectoryUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,10 +19,10 @@ import java.util.List;
 import static java.io.File.separator;
 
 @Slf4j
-@PropertySource(value = "classpath:property/file.yml")
 @Component
 public class FileStore {
-    private final String fileDir;
+
+    private String fileDir;
 
     public FileStore(@Value("${file.dir}") String fileDir) {
         this.fileDir = fileDir;
