@@ -56,13 +56,22 @@ public class File extends BaseEntity {
         Assert.notNull(realFile, "File entity constructor Error!!!");
         this.storageNm = realFile.getName();
         this.storagePath = realFile.getAbsolutePath();
-        this.extensions = getFilenameExtension(storagePath);
         this.size = realFile.length();
+        this.extensions = getFilenameExtension(storageNm);
         this.fileType = FileType.getFileType(extensions);
     }
 
     public java.io.File getRealFile() {
         return new java.io.File(this.getStoragePath() + java.io.File.separator + this.getStorageNm());
+    }
+
+    public File(String originNm, String storageNm, String storagePath, Long size) {
+        this.originNm = originNm;
+        this.storageNm = storageNm;
+        this.storagePath = storagePath;
+        this.extensions = getFilenameExtension(originNm);
+        this.fileType = FileType.getFileType(extensions);
+        this.size = size;
     }
 }
 
