@@ -30,13 +30,12 @@ class FileRepositoryTest {
     void fileSaveTest() {
         //given
         File file = new File();
-        file.setOriginNm("test");
+        file.setUploadNm("test");
 
         //when
         File save = fileRepository.save(file);
 
         //then
-        assertThat(file.getId()).isEqualTo(1L);
         assertThat(file).isEqualTo(save);
         assertThat(file).isSameAs(save);
     }
@@ -52,8 +51,8 @@ class FileRepositoryTest {
         List<File> result = fileRepository.findBySizeEquals(100L);
         // then
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).getOriginNm()).isEqualTo("test1");
-        assertThat(result.get(1).getOriginNm()).isEqualTo("size100");
+        assertThat(result.get(0).getUploadNm()).isEqualTo("test1");
+        assertThat(result.get(1).getUploadNm()).isEqualTo("size100");
     }
 
     private void file10Insert() {

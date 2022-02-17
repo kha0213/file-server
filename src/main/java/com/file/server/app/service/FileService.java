@@ -2,7 +2,9 @@ package com.file.server.app.service;
 
 import com.file.server.app.entity.File;
 import com.file.server.app.entity.dto.FileDto;
+import com.file.server.app.entity.dto.UploadFile;
 import com.file.server.app.entity.query.FileSearch;
+import com.file.server.app.exception.NoSuchFileException;
 import com.file.server.app.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -36,7 +38,7 @@ public class FileService {
      * @throws IOException IO에러
      */
     public Long upload(MultipartFile uploadFile) throws IOException {
-        java.io.File storeFile = fileStore.storeFile(uploadFile);
+        UploadFile storeFile = fileStore.storeFile(uploadFile);
         File file = fileRepository.save(new File(storeFile));
         return file.getId();
     }
@@ -48,12 +50,14 @@ public class FileService {
      * @throws IOException IO에러
      */
     public List<Long> upload(List<MultipartFile> uploadFiles) throws IOException {
-        List<java.io.File> storeFiles = fileStore.storeFiles(uploadFiles);
+        List<UploadFile> storeFiles = fileStore.storeFiles(uploadFiles);
 
         List<File> files = fileRepository.saveAll(storeFiles.stream()
                                                             .map(File::new)
                                                             .collect(toList()));
-        return files.stream().map(File::getId).collect(toList());
+        return files.stream()
+                .map(File::getId)
+                .collect(toList());
     }
 
     /**
@@ -65,7 +69,7 @@ public class FileService {
         Optional<File> file = fileRepository.findById(fileId);
 
         if(file.isEmpty()) {
-            throw new NoSuchFileException("No Such File fileId : " + fileId);
+            throw new NoSuchFileException(fileId);
         }
 
         fileStore.deleteFile(file.get().getRealFile());
@@ -95,6 +99,27 @@ public class FileService {
     public Page<FileDto> findFiles(FileSearch search, Pageable pageable) {
         Page<File> files = fileRepository.findFiles(search, pageable);
         return files.map(FileDto::new);
+    }
+
+    /**
+     * 단건 파일 찾기
+     * @param fileId 찾는 ID
+     */
+    public FileDto find(Long fileId) throws NoSuchFileException {
+        File file = fileRepository.findById(fileId)
+                .orElseThrow(NoSuchFileException::new);
+        return new FileDto(file);
+    }
+
+    /**
+     * 파일 ID 기반 파일 찾기
+     * @param fileIds 파일 Id
+     */
+    public List<FileDto> findAllById(List<Long> fileIds) {
+        return fileRepository.findAllById(fileIds)
+                .stream()
+                .map(FileDto::new)
+                .collect(Collectors.toList());
     }
 }
 

@@ -1,6 +1,7 @@
 package com.file.server.app.service;
 
 
+import com.file.server.app.entity.dto.UploadFile;
 import com.file.server.app.util.DirectoryUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.io.File.separator;
 
@@ -28,8 +30,8 @@ public class FileStore {
         this.fileDir = fileDir;
     }
 
-    public List<File> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
-        List<File> storeFileResult = new ArrayList<>();
+    public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
+        List<UploadFile> storeFileResult = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
                 storeFileResult.add(storeFile(multipartFile));
@@ -41,17 +43,19 @@ public class FileStore {
     /**
      * 파일을 실제 저장소에 저장하기
      * @param multipartFile Controller에서 넘어오는 MultipartFile객체
-     * @return 저장 성공 시 File 엔티티를 리턴한다.
+     * @return 저장 성공 시 UploadFile 객체 리턴
      * @throws IOException transferTo 에러시 IOException
      */
-    public File storeFile(@NotNull MultipartFile multipartFile) throws IOException {
-        String uploadFileNm = multipartFile.getOriginalFilename();
+    public UploadFile storeFile(@NotNull MultipartFile multipartFile) throws IOException {
+        String uploadFileNm = multipartFile.getName();
+        String saveFileNm = UUID.randomUUID().toString();
 
         File saveDir = getOrCreateSavePath();
-        File saveFile = new File(saveDir.getCanonicalPath() + separator + uploadFileNm);
+        File saveFile = new File(saveDir.getCanonicalPath() + separator + saveFileNm);
 
         multipartFile.transferTo(saveFile);
-        return saveFile;
+
+        return new UploadFile(uploadFileNm, saveFile);
     }
 
     /**

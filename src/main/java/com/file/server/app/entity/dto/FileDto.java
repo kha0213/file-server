@@ -39,7 +39,7 @@ public class FileDto {
 
     public FileDto(File file) {
         id = file.getId();
-        name = file.getOriginNm();
+        name = file.getUploadNm();
         fileType = file.getFileType();
         extensions = file.getExtensions();
         size = file.getSize();

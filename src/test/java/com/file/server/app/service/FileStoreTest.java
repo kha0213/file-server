@@ -1,5 +1,6 @@
 package com.file.server.app.service;
 
+import com.file.server.app.entity.dto.UploadFile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,14 +35,14 @@ class FileStoreTest {
     void storeFileTest() throws IOException {
 
         //given
-        when(multipartFile.getOriginalFilename()).thenReturn("1.txt");
+        when(multipartFile.getName()).thenReturn("1.txt");
         doNothing().when(multipartFile).transferTo((java.io.File) any());
 
         //when
-        File file = fileStore.storeFile(multipartFile);
+        UploadFile file = fileStore.storeFile(multipartFile);
 
-        assertThat(file.getParentFile().isDirectory()).isTrue();
-        assertThat(file.getParentFile().getName()).isEqualTo(String.valueOf(LocalDate.now().getDayOfMonth()));
+        //then
+
     }
 
     @Test

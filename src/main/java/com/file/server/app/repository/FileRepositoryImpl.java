@@ -48,8 +48,8 @@ public class FileRepositoryImpl implements FileCustomRepository {
                 .fetch().size();
     }
 
-    private BooleanExpression containsOriginNm(String originNm) {
-        return hasText(originNm) ? file.originNm.contains(originNm) : null;
+    private BooleanExpression containsUploadNm(String uploadNm) {
+        return hasText(uploadNm) ? file.uploadNm.contains(uploadNm) : null;
     }
 
     private BooleanExpression eqExtenstion(String extension) {
@@ -74,7 +74,7 @@ public class FileRepositoryImpl implements FileCustomRepository {
     private BooleanBuilder allCondSearch(FileSearch search) {
         BooleanBuilder builder = new BooleanBuilder();
         if (hasText(search.getFileName())) {
-            builder.and(file.originNm.contains(search.getFileName()));
+            builder.and(file.uploadNm.contains(search.getFileName()));
         }
         if (isPositive(search.getMinSize())) {
             builder.and(file.size.goe(search.getMinSize()));

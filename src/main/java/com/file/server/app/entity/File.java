@@ -1,5 +1,6 @@
 package com.file.server.app.entity;
 
+import com.file.server.app.entity.dto.UploadFile;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +28,7 @@ public class File extends BaseEntity {
     private Long id;
 
     // 업로드 파일 명
-    private String originNm;
+    private String uploadNm;
     // 저장 파일 명
     private String storageNm;
     /**
@@ -47,29 +48,32 @@ public class File extends BaseEntity {
     //파일 사이즈
     private Long size;
 
-    public File(String originNm, long size) {
-        this.originNm = originNm;
+    public File(String uploadNm, long size) {
+        this.uploadNm = uploadNm;
         this.size = size;
     }
 
-    public File(java.io.File realFile) {
-        Assert.notNull(realFile, "File entity constructor Error!!!");
-        this.storageNm = realFile.getName();
-        this.storagePath = realFile.getAbsolutePath();
-        this.size = realFile.length();
-        this.extensions = getFilenameExtension(storageNm);
+    public File(UploadFile uploadFile) {
+        Assert.notNull(uploadFile, "File entity constructor Error!!!");
+        this.uploadNm = uploadFile.getUploadFileNm();
+        this.storageNm = uploadFile.getStorageNm();
+        this.storagePath = uploadFile.getStoragePath();
+        this.size = uploadFile.getSize();
+        String filenameExtension = getFilenameExtension(this.uploadNm);
+        this.extensions = filenameExtension != null ? filenameExtension.toLowerCase() : null;
         this.fileType = FileType.getFileType(extensions);
     }
 
     public java.io.File getRealFile() {
-        return new java.io.File(this.getStoragePath() + java.io.File.separator + this.getStorageNm());
+        return new java.io.File(this.getStoragePath());
     }
 
-    public File(String originNm, String storageNm, String storagePath, Long size) {
-        this.originNm = originNm;
+    public File(String uploadNm, String storageNm, String storagePath, Long size) {
+        this.uploadNm = uploadNm;
         this.storageNm = storageNm;
         this.storagePath = storagePath;
-        this.extensions = getFilenameExtension(originNm);
+        String filenameExtension = getFilenameExtension(this.uploadNm);
+        this.extensions = filenameExtension != null ? filenameExtension.toLowerCase() : null;
         this.fileType = FileType.getFileType(extensions);
         this.size = size;
     }

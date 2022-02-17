@@ -42,12 +42,12 @@ class FileCustomRepositoryTest {
 
         Assertions.assertThat(files.stream().allMatch(file -> file.getSize() >= 300L)).isTrue();
         Assertions.assertThat(files.stream().allMatch(file -> file.getSize() <= 500L)).isTrue();
-        Assertions.assertThat(files.stream().allMatch(file -> file.getOriginNm().contains("6"))).isTrue();
+        Assertions.assertThat(files.stream().allMatch(file -> file.getUploadNm().contains("6"))).isTrue();
     }
 
     private void file100Insert() {
         for (int i = 0; i < 100; i++) {
-            File file = new File("origin"+i,"storage"+ i , "stroagePath"+i, 100 + (i % 10) * 100L);
+            File file = new File("upload"+i,"storage"+ i , "stroagePath"+i, 100 + (i % 10) * 100L);
             fileRepository.save(file);
         }
     }
