@@ -29,3 +29,7 @@ spring:
     #log.org.hibernate.SQL=debug
 logging:
   level.org.hibernate.SQL: debug
+
+#File
+file:
+  dir: C:\Long\test
