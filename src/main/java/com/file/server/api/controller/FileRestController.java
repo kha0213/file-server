@@ -1,14 +1,15 @@
 package com.file.server.api.controller;
 
 import com.file.server.api.common.Result;
-import com.file.server.app.entity.dto.FileDto;
+import com.file.server.app.entity.dto.FileInfo;
 import com.file.server.app.entity.query.FileSearch;
 import com.file.server.app.exception.NoSuchFileException;
 import com.file.server.app.service.FileService;
+import com.file.server.app.util.EncryptionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -20,8 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 import static com.file.server.api.common.Result.success;
@@ -33,16 +35,17 @@ import static com.file.server.api.common.Result.success;
 @RequestMapping("/file")
 public class FileRestController {
     private final FileService fileService;
+    private final EncryptionUtils encryptionUtils;
 
     @GetMapping("/list")
-    public Result<Page<FileDto>> list(FileSearch fileSearch, Pageable pageable) {
-        Page<FileDto> files = fileService.findAllFileInfo(fileSearch, pageable);
+    public Result<Page<FileInfo>> list(FileSearch fileSearch, Pageable pageable) {
+        Page<FileInfo> files = fileService.findAllFileInfo(fileSearch, pageable);
         return new Result<>(files);
     }
 
     @GetMapping("/{fileId}")
-    public Result<FileDto> findOne(@PathVariable Long fileId) throws Exception {
-        FileDto file = fileService.findFileInfoById(fileId);
+    public Result<FileInfo> findOne(@PathVariable Long fileId) throws Exception {
+        FileInfo file = fileService.findFileInfoById(fileId);
         return new Result<>(file);
     }
 
@@ -54,20 +57,21 @@ public class FileRestController {
      */
     @GetMapping("/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId)
-            throws MalformedURLException, NoSuchFileException {
-        FileDto file = fileService.findFileInfoById(fileId);
+            throws NoSuchFileException, FileNotFoundException {
+        File file = fileService.findRealFileById(fileId);
+        FileInfo fileInfo = fileService.findFileInfoById(fileId);
         Resource resource = getResource(file);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileInfo.getName() + "\"")
                 .body(resource);
     }
 
 
     @PostMapping("/upload")
-    public Result<List<FileDto>> upload(@Valid @NotEmpty List<MultipartFile> file) throws IOException {
+    public Result<List<FileInfo>> upload(@Valid @NotEmpty List<MultipartFile> file) throws IOException {
         List<Long> uploadIds = fileService.upload(file);
-        List<FileDto> uploadFiles = fileService.findAllFileInfoByIds(uploadIds);
+        List<FileInfo> uploadFiles = fileService.findAllFileInfoByIds(uploadIds);
         return new Result<>(uploadFiles);
     }
 
@@ -87,11 +91,11 @@ public class FileRestController {
      * @param file FileDto
      * @return resource
      */
-    private Resource getResource(FileDto file) throws MalformedURLException, NoSuchFileException {
-        java.io.File realFile = file.getRealFile();
-        UrlResource resource = new UrlResource(realFile.toURI());
+    private Resource getResource(File file) throws FileNotFoundException {
+        byte[] content = encryptionUtils.decryptContentByFile(file);
+        Resource resource = new ByteArrayResource(content);
         if (!resource.exists()) {
-            throw new NoSuchFileException(file.getId());
+            throw new FileNotFoundException();
         }
         return resource;
     }

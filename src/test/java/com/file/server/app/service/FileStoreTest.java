@@ -1,6 +1,6 @@
 package com.file.server.app.service;
 
-import com.file.server.app.entity.dto.UploadFile;
+import com.file.server.app.util.EncryptionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,41 +8,32 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FileStoreTest {
     @Mock
     private MultipartFile multipartFile;
 
-    private FileStore fileStore = new FileStore("C:\\Long\\test");
+    @Mock
+    private EncryptionUtils encryptionUtils;
 
-    @Test
-    @DisplayName("파일 저장소 파일 저장 테스트")
-    void storeFileTest() throws IOException {
+    private FileStore fileStore = new FileStore(new EncryptionUtils(KeyGenerator.getInstance("AES").generateKey(),"AES"),"C:\\Long\\test");
 
-        //given
-        when(multipartFile.getOriginalFilename()).thenReturn("1.txt");
-        doNothing().when(multipartFile).transferTo((java.io.File) any());
-
-        //when
-        UploadFile file = fileStore.storeFile(multipartFile);
-
-        //then
-
+    FileStoreTest() throws NoSuchPaddingException, NoSuchAlgorithmException {
     }
 
     @Test

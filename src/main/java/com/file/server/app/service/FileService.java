@@ -1,7 +1,7 @@
 package com.file.server.app.service;
 
 import com.file.server.app.entity.File;
-import com.file.server.app.entity.dto.FileDto;
+import com.file.server.app.entity.dto.FileInfo;
 import com.file.server.app.entity.dto.UploadFile;
 import com.file.server.app.entity.query.FileSearch;
 import com.file.server.app.exception.NoSuchFileException;
@@ -96,30 +96,42 @@ public class FileService {
      * @param search 파일 검색 객체
      * @return FileVO 리스트
      */
-    public Page<FileDto> findAllFileInfo(FileSearch search, Pageable pageable) {
+    public Page<FileInfo> findAllFileInfo(FileSearch search, Pageable pageable) {
         Page<File> files = fileRepository.findFiles(search, pageable);
-        return files.map(FileDto::new);
+        return files.map(FileInfo::new);
     }
 
     /**
      * 단건 파일 정보 찾기
      * @param fileId 찾는 ID
      */
-    public FileDto findFileInfoById(Long fileId) throws NoSuchFileException {
+    public FileInfo findFileInfoById(Long fileId) throws NoSuchFileException {
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new NoSuchFileException(fileId));
-        return new FileDto(file);
+        return new FileInfo(file);
     }
 
     /**
      * 파일 ID 기반 파일 정보 찾기
      * @param fileIds 파일 Id
      */
-    public List<FileDto> findAllFileInfoByIds(List<Long> fileIds) {
+    public List<FileInfo> findAllFileInfoByIds(List<Long> fileIds) {
         return fileRepository.findAllById(fileIds)
                 .stream()
-                .map(FileDto::new)
+                .map(FileInfo::new)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 실제 File 객체 가져오는 메서드 (내용 복호화 전)
+     * @param fileId 파일 key
+     * @return 실제 File 객체
+     * @throws NoSuchFileException 파일 ID로 파일 못 찾을 시 에러
+     */
+    public java.io.File findRealFileById(Long fileId) throws NoSuchFileException {
+        File file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new NoSuchFileException(fileId));
+        return new java.io.File(file.getStoragePath());
     }
 }
 

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @NoArgsConstructor
-public class FileDto {
+public class FileInfo {
     // 파일 id
     private Long id;
 
@@ -34,10 +34,7 @@ public class FileDto {
     // 파일 생성 유저
     private String createBy;
 
-    // 실제 파일 객체
-    private java.io.File realFile;
-
-    public FileDto(File file) {
+    public FileInfo(File file) {
         id = file.getId();
         name = file.getUploadNm();
         fileType = file.getFileType();
@@ -45,6 +42,5 @@ public class FileDto {
         size = file.getSize();
         createdDate = file.getCreatedDate();
         createBy = file.getCreateBy();
-        realFile = new java.io.File(file.getStoragePath());
     }
 }
