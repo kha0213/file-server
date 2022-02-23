@@ -64,7 +64,7 @@ public class FileService {
      * 파일을 실제로 삭제 후 DB 에도 삭제
      * @param fileId file의 pk
      */
-    public void delete(Long fileId) throws NoSuchFileException {
+    public void deleteById(Long fileId) throws NoSuchFileException {
         log.debug("deleteFile fileId [{}] ", fileId);
         Optional<File> file = fileRepository.findById(fileId);
 
@@ -80,7 +80,7 @@ public class FileService {
      * 파일을 실제로 삭제 후 DB 에도 삭제
      * @param fileIds file의 pk list
      */
-    public void deleteFiles(@NotEmpty List<Long> fileIds) {
+    public void deleteAllByIds(@NotEmpty List<Long> fileIds) {
         log.debug("deleteFiles fileIds [{}] ", fileIds);
         List<File> files = fileRepository.findAllById(fileIds);
 
@@ -92,30 +92,30 @@ public class FileService {
     }
 
     /**
-     * 파일 Id 리스트로 파일 찾기
+     * 파일 Id 리스트로 파일 정보 찾기
      * @param search 파일 검색 객체
      * @return FileVO 리스트
      */
-    public Page<FileDto> findFiles(FileSearch search, Pageable pageable) {
+    public Page<FileDto> findAllFileInfo(FileSearch search, Pageable pageable) {
         Page<File> files = fileRepository.findFiles(search, pageable);
         return files.map(FileDto::new);
     }
 
     /**
-     * 단건 파일 찾기
+     * 단건 파일 정보 찾기
      * @param fileId 찾는 ID
      */
-    public FileDto find(Long fileId) throws NoSuchFileException {
+    public FileDto findFileInfoById(Long fileId) throws NoSuchFileException {
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new NoSuchFileException(fileId));
         return new FileDto(file);
     }
 
     /**
-     * 파일 ID 기반 파일 찾기
+     * 파일 ID 기반 파일 정보 찾기
      * @param fileIds 파일 Id
      */
-    public List<FileDto> findAllById(List<Long> fileIds) {
+    public List<FileDto> findAllFileInfoByIds(List<Long> fileIds) {
         return fileRepository.findAllById(fileIds)
                 .stream()
                 .map(FileDto::new)

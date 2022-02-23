@@ -45,6 +45,6 @@ public class FileDto {
         size = file.getSize();
         createdDate = file.getCreatedDate();
         createBy = file.getCreateBy();
-        realFile = new java.io.File(file.getStoragePath() + file.getStorageNm());
+        realFile = new java.io.File(file.getStoragePath());
     }
 }
