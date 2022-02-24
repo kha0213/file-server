@@ -8,13 +8,15 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
+import static com.file.server.app.config.Property.USER_DEFAULT_NAME;
+
 @Component
 public class BaseEntityAuditorAware implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) return Optional.of("SYSTEM");
+        if (requestAttributes == null) return Optional.of(USER_DEFAULT_NAME);
         return Optional.ofNullable(getClientIpAddr(requestAttributes.getRequest()));
     }
 

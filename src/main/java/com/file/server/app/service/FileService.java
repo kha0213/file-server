@@ -8,6 +8,7 @@ import com.file.server.app.exception.NoSuchFileException;
 import com.file.server.app.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotEmpty;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.security.InvalidKeyException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,7 +41,7 @@ public class FileService {
      * @return List<Long> 저장된 파일의 키값들
      * @throws IOException IO에러
      */
-    public Long upload(MultipartFile uploadFile) throws IOException {
+    public Long upload(MultipartFile uploadFile) throws IOException, InvalidKeyException {
         UploadFile storeFile = fileStore.storeFile(uploadFile);
         File file = fileRepository.save(new File(storeFile));
         return file.getId();
@@ -49,7 +53,7 @@ public class FileService {
      * @return List<Long> 저장된 파일의 키값들
      * @throws IOException IO에러
      */
-    public List<Long> upload(List<MultipartFile> uploadFiles) throws IOException {
+    public List<Long> upload(List<MultipartFile> uploadFiles) throws IOException, InvalidKeyException {
         List<UploadFile> storeFiles = fileStore.storeFiles(uploadFiles);
 
         List<File> files = fileRepository.saveAll(storeFiles.stream()
@@ -128,10 +132,11 @@ public class FileService {
      * @return 실제 File 객체
      * @throws NoSuchFileException 파일 ID로 파일 못 찾을 시 에러
      */
-    public java.io.File findRealFileById(Long fileId) throws NoSuchFileException {
+    public Resource getFileData(Long fileId) throws NoSuchFileException, MalformedURLException, FileNotFoundException {
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new NoSuchFileException(fileId));
-        return new java.io.File(file.getStoragePath());
+        java.io.File realFile = new java.io.File(file.getStoragePath());
+        return fileStore.getResource(realFile);
     }
 }
 

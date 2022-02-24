@@ -10,10 +10,11 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 
+import static com.file.server.app.config.Property.ENCRYPTION_TRANSFORMATION;
+import static com.file.server.app.config.Property.ENCRYPTION_TYPE;
+
 @Configuration
 public class FileConfiguration {
-    private final String AES = "AES";
-
     @Bean
     public CommonsMultipartResolver commonsMultipartResolver() {
         CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
@@ -25,8 +26,8 @@ public class FileConfiguration {
 
     @Bean
     public EncryptionUtils fileEncryptionUtils() throws NoSuchAlgorithmException, NoSuchPaddingException {
-        SecretKey secretKey = KeyGenerator.getInstance(AES).generateKey();
-        return new EncryptionUtils(secretKey, "AES/CBC/PKCS5Padding");
+        SecretKey secretKey = KeyGenerator.getInstance(ENCRYPTION_TYPE).generateKey();
+        return new EncryptionUtils(secretKey, ENCRYPTION_TRANSFORMATION);
     }
 
 }

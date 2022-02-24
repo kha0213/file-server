@@ -31,7 +31,7 @@ class FileStoreTest {
     @Mock
     private EncryptionUtils encryptionUtils;
 
-    private FileStore fileStore = new FileStore(new EncryptionUtils(KeyGenerator.getInstance("AES").generateKey(),"AES"),"C:\\Long\\test");
+    private FileStore fileStore = new FileStore(new EncryptionUtils(KeyGenerator.getInstance("AES").generateKey(),"AES"));
 
     FileStoreTest() throws NoSuchPaddingException, NoSuchAlgorithmException {
     }

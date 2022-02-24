@@ -5,10 +5,8 @@ import com.file.server.app.entity.dto.FileInfo;
 import com.file.server.app.entity.query.FileSearch;
 import com.file.server.app.exception.NoSuchFileException;
 import com.file.server.app.service.FileService;
-import com.file.server.app.util.EncryptionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.security.InvalidKeyException;
 import java.util.List;
 
 import static com.file.server.api.common.Result.success;
@@ -35,7 +34,6 @@ import static com.file.server.api.common.Result.success;
 @RequestMapping("/file")
 public class FileRestController {
     private final FileService fileService;
-    private final EncryptionUtils encryptionUtils;
 
     @GetMapping("/list")
     public Result<Page<FileInfo>> list(FileSearch fileSearch, Pageable pageable) {
@@ -57,10 +55,9 @@ public class FileRestController {
      */
     @GetMapping("/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId)
-            throws NoSuchFileException, FileNotFoundException {
-        File file = fileService.findRealFileById(fileId);
+            throws NoSuchFileException, MalformedURLException, FileNotFoundException {
         FileInfo fileInfo = fileService.findFileInfoById(fileId);
-        Resource resource = getResource(file);
+        Resource resource = fileService.getFileData(fileId);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileInfo.getName() + "\"")
@@ -69,7 +66,7 @@ public class FileRestController {
 
 
     @PostMapping("/upload")
-    public Result<List<FileInfo>> upload(@Valid @NotEmpty List<MultipartFile> file) throws IOException {
+    public Result<List<FileInfo>> upload(@Valid @NotEmpty List<MultipartFile> file) throws IOException, InvalidKeyException {
         List<Long> uploadIds = fileService.upload(file);
         List<FileInfo> uploadFiles = fileService.findAllFileInfoByIds(uploadIds);
         return new Result<>(uploadFiles);
@@ -84,19 +81,5 @@ public class FileRestController {
     public Result<Object> delete(@PathVariable Long fileId) throws Exception {
         fileService.deleteById(fileId);
         return success();
-    }
-
-    /**
-     * 파일 Dto로 Resource 가져오기
-     * @param file FileDto
-     * @return resource
-     */
-    private Resource getResource(File file) throws FileNotFoundException {
-        byte[] content = encryptionUtils.decryptContentByFile(file);
-        Resource resource = new ByteArrayResource(content);
-        if (!resource.exists()) {
-            throw new FileNotFoundException();
-        }
-        return resource;
     }
 }
